@@ -25,7 +25,9 @@ SECRET_KEY = '10y83$&yi^2_g_y*r^eeabge40t&0ioyd9=m-4h-sc!0aq4rjm'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+AUTH_USER_MODEL = "user_control.CustomUser"
 
 
 # Application definition
@@ -37,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'user_control',
+    'chatapi'
 ]
 
 MIDDLEWARE = [
