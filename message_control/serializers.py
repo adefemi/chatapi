@@ -13,22 +13,26 @@ class MessageAttachmentSerializer(serializers.ModelSerializer):
     attachment = GenericFileUploadSerializer()
 
     class Meta:
-        models = MessageAttachment
+        model = MessageAttachment
         fields = "__all__"
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    sender = serializers.SerializerMethodField("get_user_data")
+    sender = serializers.SerializerMethodField("get_sender_data")
     sender_id = serializers.IntegerField(write_only=True)
-    receiver = serializers.SerializerMethodField("get_user_data")
+    receiver = serializers.SerializerMethodField("get_receiver_data")
     receiver_id = serializers.IntegerField(write_only=True)
     message_attachments = MessageAttachmentSerializer(
         read_only=True, many=True)
 
     class Meta:
-        models = Message
+        model = Message
         fields = "__all__"
 
-    def get_user_data(self, obj):
+    def get_receiver_data(self, obj):
         from user_control.serializers import UserProfileSerializer
-        return UserProfileSerializer(obj.sender.user_profile)
+        return UserProfileSerializer(obj.receiver.user_profile).data
+
+    def get_sender_data(self, obj):
+        from user_control.serializers import UserProfileSerializer
+        return UserProfileSerializer(obj.sender.user_profile).data
