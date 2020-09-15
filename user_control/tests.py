@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase
 from .views import get_random, get_access_token, get_refresh_token
-from .models import CustomUser
+from .models import CustomUser, UserProfile
 from message_control.tests import create_image, SimpleUploadedFile
 
 
@@ -107,8 +107,9 @@ class TestUserInfo(APITestCase):
     file_upload_url = "/message/file-upload"
 
     def setUp(self):
-        self.user = CustomUser.objects.create(
+        self.user = CustomUser.objects._create_user(
             username="adefemigreat", password="ade123")
+
         self.client.force_authenticate(user=self.user)
 
     def test_post_user_profile(self):
@@ -189,3 +190,48 @@ class TestUserInfo(APITestCase):
         self.assertEqual(result["first_name"], "Ade")
         self.assertEqual(result["last_name"], "Great")
         self.assertEqual(result["user"]["username"], "adefemigreat")
+
+    def test_user_search(self):
+
+        UserProfile.objects.create(user=self.user, first_name="Adefemi", last_name="oseni",
+                                   caption="live is all about living", about="I'm a youtuber")
+
+        user2 = CustomUser.objects._create_user(
+            username="tester", password="tester123")
+        UserProfile.objects.create(user=user2, first_name="Vester", last_name="Mango",
+                                   caption="it's all about testing", about="I'm a youtuber")
+
+        user3 = CustomUser.objects._create_user(
+            username="vasman", password="vasman123")
+        UserProfile.objects.create(user=user3, first_name="Adeyemi", last_name="Boseman",
+                                   caption="it's all about testing", about="I'm a youtuber")
+
+        # test keyword = adefemi oseni
+        url = self.profile_url + "?keyword=adefemi oseni"
+
+        response = self.client.get(url)
+        result = response.json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["user"]["username"], "adefemigreat")
+
+        # test keyword = ade
+        url = self.profile_url + "?keyword=ade"
+
+        response = self.client.get(url)
+        result = response.json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[1]["user"]["username"], "vasman")
+
+        # test keyword = vester
+        url = self.profile_url + "?keyword=vester"
+
+        response = self.client.get(url)
+        result = response.json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["user"]["username"], "tester")
