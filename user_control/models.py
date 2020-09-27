@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from message_control.models import GenericFileUpload
+from django.utils import timezone
 
 
 class CustomUserManager(BaseUserManager):
@@ -35,12 +36,16 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    is_online = models.DateTimeField(default=timezone.now)
 
     USERNAME_FIELD = "username"
     objects = CustomUserManager()
 
     def __str__(self):
         return self.username
+
+    class Meta:
+        ordering = ("created_at",)
 
 
 class UserProfile(models.Model):
@@ -57,6 +62,9 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    class Meta:
+        ordering = ("created_at",)
 
 
 class Jwt(models.Model):

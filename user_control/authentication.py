@@ -2,7 +2,7 @@ import jwt
 from django.conf import settings
 from datetime import datetime
 from rest_framework.authentication import BaseAuthentication
-from .models import CustomUser
+from .models import CustomUser, Jwt
 
 
 class Authentication(BaseAuthentication):

@@ -210,7 +210,7 @@ class TestUserInfo(APITestCase):
         url = self.profile_url + "?keyword=adefemi oseni"
 
         response = self.client.get(url)
-        result = response.json()
+        result = response.json()["results"]
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(result), 1)
@@ -220,7 +220,7 @@ class TestUserInfo(APITestCase):
         url = self.profile_url + "?keyword=ade"
 
         response = self.client.get(url)
-        result = response.json()
+        result = response.json()["results"]
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(result), 2)
@@ -230,7 +230,7 @@ class TestUserInfo(APITestCase):
         url = self.profile_url + "?keyword=vester"
 
         response = self.client.get(url)
-        result = response.json()
+        result = response.json()["results"]
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(result), 1)
