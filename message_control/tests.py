@@ -157,3 +157,11 @@ class TestMessage(APITestCase):
 
         # assertions
         self.assertEqual(response.status_code, 204)
+
+    def test_get_message(self):
+
+        response = self.client.get(
+            self.message_url+f"?user_id={self.receiver.id}")
+        result = response.json()
+
+        self.assertEqual(response.status_code, 200)

@@ -38,7 +38,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_message_count(self, obj):
-        user_id = self.context["request"].user.id
+        try:
+            user_id = self.context["request"].user.id
+        except Exception as e:
+            user_id = None
 
         from message_control.models import Message
         message = Message.objects.filter(Q(sender_id=user_id, receiver_id=obj.user.id) | Q(

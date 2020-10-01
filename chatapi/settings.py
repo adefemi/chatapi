@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['*']
 AUTH_USER_MODEL = "user_control.CustomUser"
 
 REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'chatapi.custom_methods.custom_exception_handler',
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20
 }
@@ -49,12 +50,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'user_control',
     'message_control',
-    'chatapi'
+    'chatapi',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -81,6 +84,21 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'chatapi.wsgi.application'
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_HEADERS = (
+    'x-requested-with',
+    'content-type',
+    'accept',
+    'origin',
+    'authorization',
+    'accept-encoding',
+    'x-csrftoken',
+    'access-control-allow-origin',
+    'content-disposition'
+)
+CORS_ALLOW_CREDENTIALS = False
+CORS_ALLOW_METHODS = ('GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS')
 
 
 # Database
@@ -159,3 +177,5 @@ AWS_S3_OBJECT_PARAMETERS = {
 
 
 DEFAULT_FILE_STORAGE = 'chatapi.storage_backends.MediaStorage'
+
+SOCKET_SERVER = config("SOCKET_SERVER")
