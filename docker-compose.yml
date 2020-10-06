@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  web:
+  api:
     build: .
     command: bash -c "python manage.py runserver 0.0.0.0:8000"
     container_name: chatapi
