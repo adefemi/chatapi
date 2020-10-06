@@ -1,6 +1,7 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from django.utils import timezone
 from rest_framework.views import exception_handler
+from rest_framework.response import Response
 
 
 class IsAuthenticatedCustom(BasePermission):
@@ -36,4 +37,4 @@ def custom_exception_handler(exc, context):
 
     exc_list = str(exc).split("DETAIL: ")
 
-    return Response({"error": exc_list[-1]}, status=status.HTTP_403_FORBIDDEN)
+    return Response({"error": exc_list[-1]}, status=403)

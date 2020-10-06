@@ -18,8 +18,11 @@ def handleRequest(serializerData):
     headers = {
         'Content-Type': 'application/json',
     }
-    requests.post(settings.SOCKET_SERVER, json.dumps(
-        notification), headers=headers)
+    try:
+        requests.post(settings.SOCKET_SERVER, json.dumps(
+            notification), headers=headers)
+    except Exception as e:
+        pass
     return True
 
 
