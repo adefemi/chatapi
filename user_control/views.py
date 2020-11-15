@@ -111,7 +111,7 @@ class UserProfileView(ModelViewSet):
 
         if keyword:
             search_fields = (
-                "user__username", "first_name", "last_name"
+                "user__username", "first_name", "last_name", "user__email"
             )
             query = self.get_query(keyword, search_fields)
             return self.queryset.filter(query).distinct()

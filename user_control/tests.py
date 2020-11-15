@@ -48,7 +48,8 @@ class TestAuth(APITestCase):
     def test_register(self):
         payload = {
             "username": "adefemigreat",
-            "password": "ade123"
+            "password": "ade123",
+            "email": "adefemigreat@yahoo.com"
         }
 
         response = self.client.post(self.register_url, data=payload)
@@ -59,7 +60,8 @@ class TestAuth(APITestCase):
     def test_login(self):
         payload = {
             "username": "adefemigreat",
-            "password": "ade123"
+            "password": "ade123",
+            "email": "adefemigreat@yahoo.com"
         }
 
         # register
@@ -79,7 +81,8 @@ class TestAuth(APITestCase):
     def test_refresh(self):
         payload = {
             "username": "adefemigreat",
-            "password": "ade123"
+            "password": "ade123",
+            "email": "adefemigreat@yahoo.com"
         }
 
         # register
@@ -108,7 +111,7 @@ class TestUserInfo(APITestCase):
 
     def setUp(self):
         self.user = CustomUser.objects._create_user(
-            username="adefemigreat", password="ade123")
+            username="adefemigreat", password="ade123", email="adefemigreat@yahoo.com")
 
         self.client.force_authenticate(user=self.user)
 
@@ -197,12 +200,12 @@ class TestUserInfo(APITestCase):
                                    caption="live is all about living", about="I'm a youtuber")
 
         user2 = CustomUser.objects._create_user(
-            username="tester", password="tester123")
+            username="tester", password="tester123", email="adefemi@yahoo.com")
         UserProfile.objects.create(user=user2, first_name="Vester", last_name="Mango",
                                    caption="it's all about testing", about="I'm a youtuber")
 
         user3 = CustomUser.objects._create_user(
-            username="vasman", password="vasman123")
+            username="vasman", password="vasman123", email="adefemi@yahoo.com2")
         UserProfile.objects.create(user=user3, first_name="Adeyemi", last_name="Boseman",
                                    caption="it's all about testing", about="I'm a youtuber")
 
@@ -224,8 +227,8 @@ class TestUserInfo(APITestCase):
         result = response.json()["results"]
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(result), 2)
-        self.assertEqual(result[1]["user"]["username"], "vasman")
+        self.assertEqual(len(result), 3)
+        self.assertEqual(result[1]["user"]["username"], "tester")
 
         # test keyword = vester
         url = self.profile_url + "?keyword=vester"
