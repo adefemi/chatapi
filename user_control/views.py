@@ -37,6 +37,19 @@ def get_refresh_token():
     )
 
 
+def decodeJWT(bearer):
+    if not bearer:
+        return None
+
+    token = bearer[7:]
+    decoded = jwt.decode(token, key=settings.SECRET_KEY)
+    if decoded:
+        try:
+            return CustomUser.objects.get(id=decoded["user_id"])
+        except Exception:
+            return None
+
+
 class LoginView(APIView):
     serializer_class = LoginSerializer
 
@@ -103,7 +116,6 @@ class RefreshView(APIView):
 class UserProfileView(ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = (IsAuthenticatedCustom, )
 
     def get_queryset(self):
         data = self.request.query_params.dict()
@@ -151,3 +163,16 @@ class UserProfileView(ModelViewSet):
 
         '''
         return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
+
+
+class MeView(APIView):
+    permission_classes = (IsAuthenticatedCustom, )
+    serializer_class = UserProfileSerializer
+
+    def get(self, request):
+        data = {}
+        try:
+            data = self.serializer_class(request.user.user_profile).data
+        except Exception:
+            pass
+        return Response(data, status=200)
