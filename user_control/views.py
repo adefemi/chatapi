@@ -116,6 +116,7 @@ class RefreshView(APIView):
 class UserProfileView(ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
+    permission_classes = (IsAuthenticatedCustom, )
 
     def get_queryset(self):
         data = self.request.query_params.dict()
@@ -126,9 +127,15 @@ class UserProfileView(ModelViewSet):
                 "user__username", "first_name", "last_name", "user__email"
             )
             query = self.get_query(keyword, search_fields)
-            return self.queryset.filter(query).distinct()
+            try:
+                return self.queryset.filter(query).filter(**data).exclude(user_id=self.request.user.id).distinct()
+            except Exception as e:
+                raise Exception(e)
 
-        return self.queryset
+        try:
+            return self.queryset.filter(**data).exclude(user_id=self.request.user.id).distinct()
+        except Exception as e:
+            raise Exception(e)
 
     @staticmethod
     def get_query(query_string, search_fields):
