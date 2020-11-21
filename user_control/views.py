@@ -123,6 +123,7 @@ class UserProfileView(ModelViewSet):
             return self.queryset
 
         data = self.request.query_params.dict()
+        data.pop("page", None)
         keyword = data.pop("keyword", None)
 
         if keyword:
