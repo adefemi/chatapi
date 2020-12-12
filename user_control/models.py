@@ -68,6 +68,18 @@ class UserProfile(models.Model):
         ordering = ("created_at",)
 
 
+class Favorite(models.Model):
+    user = models.ForeignKey(CustomUser, related_name="user_favorites", on_delete=models.CASCADE)
+    favorite = models.ForeignKey(CustomUser, related_name="user_favoured", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.favorite.username}"
+
+    class Meta:
+        ordering = ("created_at",)
+
+
 class Jwt(models.Model):
     user = models.OneToOneField(
         CustomUser, related_name="login_user", on_delete=models.CASCADE)
