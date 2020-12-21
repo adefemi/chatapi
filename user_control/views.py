@@ -134,13 +134,13 @@ class UserProfileView(ModelViewSet):
             try:
                 return self.queryset.filter(query).filter(**data).exclude(
                     Q(user_id=self.request.user.id) |
-                    Q(user__is_superuser=True)).distinct().order_by("-user__user_favoured_id")
+                    Q(user__is_superuser=True)).distinct().order_by("user__user_favoured_created_at")
             except Exception as e:
                 raise Exception(e)
 
         return self.queryset.filter(**data).exclude(
             Q(user_id=self.request.user.id) |
-            Q(user__is_superuser=True)).distinct().order_by("-user__user_favoured_id")
+            Q(user__is_superuser=True)).distinct().order_by("user__user_favoured_created_at")
 
     @staticmethod
     def get_query(query_string, search_fields):
