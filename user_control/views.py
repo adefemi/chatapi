@@ -14,7 +14,7 @@ from .authentication import Authentication
 from chatapi.custom_methods import IsAuthenticatedCustom
 from rest_framework.viewsets import ModelViewSet
 import re
-from django.db.models import Q
+from django.db.models import Q, F
 
 
 def get_random(length):
@@ -134,13 +134,13 @@ class UserProfileView(ModelViewSet):
             try:
                 return self.queryset.filter(query).filter(**data).exclude(
                     Q(user_id=self.request.user.id) |
-                    Q(user__is_superuser=True)).order_by("user__user_favoured_created_at").distinct()
+                    Q(user__is_superuser=True)).order_by("user__user_favoured__id").distinct()
             except Exception as e:
                 raise Exception(e)
 
         return self.queryset.filter(**data).exclude(
             Q(user_id=self.request.user.id) |
-            Q(user__is_superuser=True)).order_by("user__user_favoured_created_at").distinct()
+            Q(user__is_superuser=True)).order_by("user__user_favoured__id").distinct()
 
     @staticmethod
     def get_query(query_string, search_fields):
