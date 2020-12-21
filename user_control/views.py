@@ -134,20 +134,16 @@ class UserProfileView(ModelViewSet):
             try:
                 return self.queryset.filter(query).filter(**data).exclude(
                     Q(user_id=self.request.user.id) |
-                    Q(user__is_superuser=True)).distinct().order_by("user__user_favoured_id")
+                    Q(user__is_superuser=True)).distinct().order_by("-user__user_favoured_id")
             except Exception as e:
                 raise Exception(e)
 
         return self.queryset.filter(**data).exclude(
             Q(user_id=self.request.user.id) |
-            Q(user__is_superuser=True)).distinct().order_by("user__user_favoured_id")
+            Q(user__is_superuser=True)).distinct().order_by("-user__user_favoured_id")
 
     @staticmethod
     def get_query(query_string, search_fields):
-        ''' Returns a query, that is a combination of Q objects. That combination
-            aims to search keywords within a model by testing the given search fields.
-
-        '''
         query = None  # Query to search for every search term
         terms = UserProfileView.normalize_query(query_string)
         for term in terms:
@@ -166,14 +162,6 @@ class UserProfileView(ModelViewSet):
 
     @staticmethod
     def normalize_query(query_string, findterms=re.compile(r'"([^"]+)"|(\S+)').findall, normspace=re.compile(r'\s{2,}').sub):
-        ''' Splits the query string in invidual keywords, getting rid of unecessary spaces
-            and grouping quoted words together.
-            Example:
-
-            >>> normalize_query('  some random  words "with   quotes  " and   spaces')
-            ['some', 'random', 'words', 'with quotes', 'and', 'spaces']
-
-        '''
         return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
 
 
