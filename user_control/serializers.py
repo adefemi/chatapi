@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from .models import UserProfile, CustomUser
+from .models import UserProfile, CustomUser, Favorite
 from message_control.serializers import GenericFileUploadSerializer
-from django.db.models import Q
 
 
 class LoginSerializer(serializers.Serializer):
@@ -19,7 +18,16 @@ class RefreshSerializer(serializers.Serializer):
     refresh = serializers.CharField()
 
 
+class FavoriteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Favorite
+        fields = "__all__"
+
+
 class CustomUserSerializer(serializers.ModelSerializer):
+    user_favorites = FavoriteSerializer(read_only=True, many=True)
+    user_favoured = FavoriteSerializer(read_only=True, many=True)
 
     class Meta:
         model = CustomUser
