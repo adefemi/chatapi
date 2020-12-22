@@ -83,10 +83,9 @@ class RegisterView(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        data = serializer.validated_data.pop("username")
+        username = serializer.validated_data.pop("username")
 
-        CustomUser.objects.create_user(
-            username=serializer.validated_data["username"].lower(), **data)
+        CustomUser.objects.create_user(username=username, **serializer.validated_data)
 
         return Response({"success": "User created."}, status=201)
 
@@ -138,16 +137,20 @@ class UserProfileView(ModelViewSet):
                 return self.queryset.filter(query).filter(**data).exclude(
                     Q(user_id=self.request.user.id) |
                     Q(user__is_superuser=True)
-                ).annotate(fav_count=Count(
-                    Subquery(Favorite.objects.filter(user_id=self.request.user.id)))).order_by("-fav_count")
+                ).annotate(
+                    fav_count=Count(
+                        "user__user_favoured", filter=Q(
+                            user__user_favorites__id=self.request.user.id))).order_by("-fav_count")
             except Exception as e:
                 raise Exception(e)
 
-        return self.queryset.filter(**data).exclude(
+        result = self.queryset.filter(**data).exclude(
             Q(user_id=self.request.user.id) |
             Q(user__is_superuser=True)
-        ).annotate(fav_count=Count(
-                    Subquery(Favorite.objects.filter(user_id=self.request.user.id)))).order_by("-fav_count")
+        ).annotate(
+            fav_count=Count("user__user_favoured",
+                            filter=Q(user__user_favorites__id=self.request.user.id))).order_by("-fav_count")
+        return result
 
     @staticmethod
     def get_query(query_string, search_fields):
