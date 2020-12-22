@@ -135,14 +135,14 @@ class UserProfileView(ModelViewSet):
                 return self.queryset.filter(query).filter(**data).exclude(
                     Q(user_id=self.request.user.id) |
                     Q(user__is_superuser=True)
-                ).annotate(fav_count=Count("user__user_favorites__id")).order_by("-fav_count")
+                ).annotate(fav_count=Count("user__user_favoured__id")).order_by("-fav_count")
             except Exception as e:
                 raise Exception(e)
 
         return self.queryset.filter(**data).exclude(
             Q(user_id=self.request.user.id) |
             Q(user__is_superuser=True)
-        ).annotate(fav_count=Count("user__user_favorites__id")).order_by("-fav_count")
+        ).annotate(fav_count=Count("user__user_favoured__id")).order_by("-fav_count")
 
     @staticmethod
     def get_query(query_string, search_fields):
