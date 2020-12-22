@@ -83,7 +83,10 @@ class RegisterView(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        CustomUser.objects._create_user(**serializer.validated_data)
+        data = serializer.validated_data.pop("username")
+
+        CustomUser.objects.create_user(
+            username=serializer.validated_data["username"].lower(), **data)
 
         return Response({"success": "User created."}, status=201)
 
