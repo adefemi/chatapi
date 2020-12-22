@@ -108,3 +108,4 @@ class ReadMultipleMessages(APIView):
         data = request.data.get("message_ids", None)
 
         Message.objects.filter(id__in=data).update(is_read=True)
+        return  Response("success")
