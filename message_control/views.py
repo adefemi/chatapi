@@ -105,6 +105,6 @@ class MessageView(ModelViewSet):
 class ReadMultipleMessages(APIView):
 
     def post(self, request):
-        data = request.data.dict().get("message_ids", None)
+        data = request.data.get("message_ids", None)
 
         Message.objects.filter(id__in=data).update(is_read=True)
