@@ -74,7 +74,7 @@ class Favorite(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.favorite.username}"
+        return f"{self.user.username}"
 
     class Meta:
         ordering = ("created_at",)

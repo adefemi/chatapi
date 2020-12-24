@@ -14,7 +14,7 @@ from .authentication import Authentication
 from chatapi.custom_methods import IsAuthenticatedCustom
 from rest_framework.viewsets import ModelViewSet
 import re
-from django.db.models import Q, Count, Subquery
+from django.db.models import Q, Count, Subquery, OuterRef
 
 
 def get_random(length):
@@ -139,8 +139,8 @@ class UserProfileView(ModelViewSet):
                     Q(user__is_superuser=True)
                 ).annotate(
                     fav_count=Count(
-                        "user__user_favoured", filter=Q(
-                            user__user_favorites__id=self.request.user.id))).order_by("-fav_count")
+                        self.request.user.user_favorites.favorite.filter(
+                            id=OuterRef("user_id")).values("pk"))).order_by("-fav_count")
             except Exception as e:
                 raise Exception(e)
 
@@ -148,8 +148,8 @@ class UserProfileView(ModelViewSet):
             Q(user_id=self.request.user.id) |
             Q(user__is_superuser=True)
         ).annotate(
-            fav_count=Count("user__user_favoured",
-                            filter=Q(user__user_favorites__id=self.request.user.id))).order_by("-fav_count")
+            fav_count=Count(self.request.user.user_favorites.favorite.filter(id=OuterRef("user_id")).values("pk"))
+        ).order_by("-fav_count")
         return result
 
     @staticmethod
