@@ -138,9 +138,8 @@ class UserProfileView(ModelViewSet):
                     Q(user_id=self.request.user.id) |
                     Q(user__is_superuser=True)
                 ).annotate(
-                    fav_count=Count(
-                        self.request.user.user_favorites.favorite.filter(
-                            id=OuterRef("user_id")).values("pk"))).order_by("-fav_count")
+                    fav_count=Count(self.user_fav_query(self.request.user))
+                ).order_by("-fav_count")
             except Exception as e:
                 raise Exception(e)
 
@@ -148,9 +147,17 @@ class UserProfileView(ModelViewSet):
             Q(user_id=self.request.user.id) |
             Q(user__is_superuser=True)
         ).annotate(
-            fav_count=Count(self.request.user.user_favorites.favorite.filter(id=OuterRef("user_id")).values("pk"))
+            fav_count=Count(self.user_fav_query(self.request.user))
         ).order_by("-fav_count")
         return result
+
+    @staticmethod
+    def user_fav_query(user):
+        try:
+            return user.user_favorites.favorite.filter(id=OuterRef("user_id")).values("pk")
+        except Exception:
+            return []
+
 
     @staticmethod
     def get_query(query_string, search_fields):
