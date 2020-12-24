@@ -208,16 +208,19 @@ class UpdateFavoriteView(APIView):
     serializer_class = FavoriteSerializer
 
     def post(self, request, *args, **kwargs):
-        user_id = request.user.id
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        favorite = Favorite.objects.filter(user_id=user_id, favorite_id=serializer.validated_data["favorite_id"])
+        try:
+            favorite_user = CustomUser.objects.get(id=serializer.validated_data["favorite_id"])
+        except Exception:
+            raise Exception("Favorite user does not exist")
+        favorite = request.user.user_favorites.favorite.filter(id=favorite_user.id)
         if favorite:
-            favorite.delete()
-            return Response("successful")
+            request.user.user_favorites.favorite.remove(favorite_user)
+            return Response("removed")
 
-        Favorite.objects.create(user_id=user_id, favorite_id=serializer.validated_data["favorite_id"])
-        return Response("successful")
+        request.user.user_favorites.favorite.add(favorite_user)
+        return Response("added")
 
 
 class CheckIsFavoriteView(APIView):

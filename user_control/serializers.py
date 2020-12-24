@@ -18,16 +18,7 @@ class RefreshSerializer(serializers.Serializer):
     refresh = serializers.CharField()
 
 
-class FavoriteSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Favorite
-        fields = "__all__"
-
-
 class CustomUserSerializer(serializers.ModelSerializer):
-    user_favorites = FavoriteSerializer(read_only=True, many=True)
-    user_favoured = FavoriteSerializer(read_only=True, many=True)
 
     class Meta:
         model = CustomUser
