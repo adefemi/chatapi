@@ -227,9 +227,8 @@ class CheckIsFavoriteView(APIView):
     permission_classes = (IsAuthenticatedCustom,)
 
     def get(self, request, *args, **kwargs):
-        user_id = request.user.id
         favorite_id = kwargs.get("favorite_id", None)
-        favorite = Favorite.objects.filter(user_id=user_id, favorite_id=favorite_id)
+        favorite = request.user.user_favorites.favorite.filter(id=favorite_id)
         if favorite:
             return Response(True)
         return Response(False)
